@@ -20,7 +20,7 @@ Kfl = 1 #W/m^2K
 Tfl = 30 #°
 Sfl = 1
 Kfr = 10 #/m^2K
-Tfr = 30#°
+Tfr = 30 #°
 Sfr = 1
 
 #GRANDEURS A CALCULER
@@ -59,13 +59,13 @@ deltax = np.linspace(0, L, n)
 #MISE EN MATRICE
 
 #tout sauf les bords
-for i in range(0,n-1):
+for i in range(1,n-1):
     deltax[i] = x[i+1]-x[i]
     a[i][i] = K[i-1]*S[i-1] + K[i]*S[i]
     a[i][i-1] = -K[i-1]*S[i-1]
     a[i][i+1] = -K[i]*S[i]
     b[i] = q[i]*deltax[i]*S[i]
-
+print("a = ", a)
 #BC
 """
 #Dirichlet à gauche
@@ -76,7 +76,7 @@ for i in range (1,n):
     a[0][i] = 0
 b[0] = T[0]
 
-"""
+
 #dirichlet à droite
 T[n-1] = Tr
 a[n-1][n-1] = 1
@@ -84,7 +84,7 @@ for i in range(n-1):
     a[n-1][i] = 0
 b[n-1] = T[n-1]
 
-"""
+
 #neumann à gauche
 
 a[0][0] = K[0]*S[0]
@@ -107,7 +107,11 @@ b[0] = q[0]*deltax[0]*S[0] + Kfl*Sfl*Tfl
 
 #fourier à droite
 
-
+a[n-1][n-1] = K[n-2]*S[n-2] + Kfr*Sfr
+a[n-1][n-2] = -K[n-2]*S[n-2]
+for i in range (0,n-2):
+    a[n-1][i] = 0
+b[n-1] = q[n-1]*deltax[n-1]*S[n-2] + Kfr*Sfr*Tfr
 #RESOLUTION
 
 T = np.linalg.solve(a, b)
